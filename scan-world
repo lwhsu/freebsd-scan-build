@@ -1,22 +1,27 @@
 #!/bin/sh
 
 DRY=
-SRCDIR=/data/src/freebsd-head
-export OBJ=/usr/obj/$SRCDIR
-DEST=/data/scan-build
-RELEASE=Release
+
+SCAN_BUILD=/usr/local/bin/scan-build34
+CLANG_SHARE=/usr/local/share/clang34
+
+SRCDIR=/ssd/lwhsu/scan-build/src
+export OBJ=/ssd/lwhsu/scan-build/obj
+export MAKEOBJDIRPREFIX=/ssd/lwhsu/scan-build/obj
+DEST=/ssd/lwhsu/scan-build/dest
+#RELEASE=Release
 MYFLAGS="__MAKE_CONF=/dev/null -m $SRCDIR/share/mk -DWITHOUT_PROFILE -DMODULES_WITH_WORLD"
 #MYFLAGS="$MYFLAGS -DWITH_GNUCXX -DWITH_GCC COMPILER_TYPE=gcc"
 #MYFLAGS="$MYFLAGS -DWITHOUT_CLANG -DWITHOUT_LLVM"
 DATE=`date "+%Y-%m-%d"`
 ARCH=`uname -p`
 
-LOCK=/tmp/scan.lock
-trap 'rm -f ${LOCK} ; exit 1' 1 2 3 15
-if ! shlock -p $$ -f ${LOCK}; then
-    echo "Locked by `cat ${LOCK}`, running too long? Please fix ..." >&2
-    exit 1
-fi
+#LOCK=/tmp/scan.lock
+#trap 'rm -f ${LOCK} ; exit 1' 1 2 3 15
+#if ! shlock -p $$ -f ${LOCK}; then
+#    echo "Locked by `cat ${LOCK}`, running too long? Please fix ..." >&2
+#    exit 1
+#fi
 
 do_scan()
 {
@@ -27,17 +32,17 @@ do_scan()
     if [ -z "$DRY" ]; then
 	mkdir -p $output || exit 1
 	if [ -z "$noclean" ]; then
-	    make -j2 $MYFLAGS clean
-	    make -j2 $MYFLAGS obj
+	    make -j8 $MYFLAGS clean
+	    make -j8 $MYFLAGS obj
 	fi
 	echo "-=-> scanning $dir at `date "+%Y-%m-%d %H:%M:%S"`"
 	/usr/bin/time -l \
 	env CCC_ANALYZER_CHECKER_DEADCODE=0 \
-	/data/src/llvm/$RELEASE/bin/scan-build \
-	    --use-cc /usr/obj$SRCDIR/tmp/usr/bin/cc \
-	    --use-c++ /usr/obj$SRCDIR/tmp/usr/bin/c++ \
-	    -k -o $output make -j4 $MYFLAGS \
-	    CROSS_COMPILER_PREFIX=$OBJ/tmp/usr/bin/ "$@"
+	${SCAN_BUILD} \
+	    --use-cc ${OBJ}${SRCDIR}/tmp/usr/bin/cc \
+	    --use-c++ ${OBJ}${SRCDIR}/tmp/usr/bin/c++ \
+	    -k -o $output make -j8 $MYFLAGS \
+	    CROSS_COMPILER_PREFIX=$OBJ${SRCDIR}/tmp/usr/bin/ "$@"
 	rmdir $output 2>/dev/null
     else
 	echo "$dir -> $output"
@@ -75,38 +80,38 @@ recurse_dirs()
 
 echo "-=-> scan-world started at `date "+%Y-%m-%d %H:%M:%S"`"
 
-if [ -z "$DRY" ]; then
-    cd /data/src/llvm
-#./configure --enable-optimized --disable-assertions --disable-docs --enable-targets=host \
-#  --with-c-include-dirs=/usr/obj$SRCDIR/tmp/usr/include \
-#  --with-cxx-include-root=/usr/obj$SRCDIR/tmp/usr/include
-    gmake update
-
-    echo "-=-> Building LLVM"
-    if ! gmake -j4; then
-	if ! gmake; then
-	    echo "Error building LLVM, bailing out" 2>&1
-	    exit 1
-	fi
-    fi
-    # Omit the dead store checker, too many positives to be useful
-    cp -p ./tools/clang/tools/scan-build/scan-build ./tools/clang/tools/scan-build/scanview.css \
-	    ./tools/clang/tools/scan-build/sorttable.js $RELEASE/bin
-#    && \
-#	    sed -i.bak -e '/check-dead-stores/d' -e '/check-idempotent-operations/d' \
-#	    -e '/check-objc-self-init/d' $RELEASE/bin/scan-build
-    # Turn off chatty/verbose progress output
-    cp -p ./tools/clang/tools/scan-build/ccc-analyzer $RELEASE/bin && \
-	    ln -sf ccc-analyzer $RELEASE/bin/c++-analyzer
-#    && \
-#	    sed -i.bak -e '/analyzer-display-progress/d' $RELEASE/bin/ccc-analyzer
-    echo "-=-> Updating source in $SRCDIR"
-    cd $SRCDIR && svn up
-    if [ $? != 0 ]; then
-	echo "Error during bootstrap" >&2
-	exit 1
-    fi
-fi
+#if [ -z "$DRY" ]; then
+#    cd /data/src/llvm
+##./configure --enable-optimized --disable-assertions --disable-docs --enable-targets=host \
+##  --with-c-include-dirs=/usr/obj$SRCDIR/tmp/usr/include \
+##  --with-cxx-include-root=/usr/obj$SRCDIR/tmp/usr/include
+#    gmake update
+#
+#    echo "-=-> Building LLVM"
+#    if ! gmake -j4; then
+#	if ! gmake; then
+#	    echo "Error building LLVM, bailing out" 2>&1
+#	    exit 1
+#	fi
+#    fi
+#    # Omit the dead store checker, too many positives to be useful
+#    cp -p ./tools/clang/tools/scan-build/scan-build ./tools/clang/tools/scan-build/scanview.css \
+#	    ./tools/clang/tools/scan-build/sorttable.js $RELEASE/bin
+##    && \
+##	    sed -i.bak -e '/check-dead-stores/d' -e '/check-idempotent-operations/d' \
+##	    -e '/check-objc-self-init/d' $RELEASE/bin/scan-build
+#    # Turn off chatty/verbose progress output
+#    cp -p ./tools/clang/tools/scan-build/ccc-analyzer $RELEASE/bin && \
+#	    ln -sf ccc-analyzer $RELEASE/bin/c++-analyzer
+##    && \
+##	    sed -i.bak -e '/analyzer-display-progress/d' $RELEASE/bin/ccc-analyzer
+#    echo "-=-> Updating source in $SRCDIR"
+#    cd $SRCDIR && svn up
+#    if [ $? != 0 ]; then
+#	echo "Error during bootstrap" >&2
+#	exit 1
+#    fi
+#fi
 
 cd $SRCDIR || exit 1
 
@@ -125,8 +130,8 @@ if [ -z "$DRY" ]; then
     # Hack around this by triggering the cross-compile support which will add
     # --sysroot=$WORLDTMP to CFLAGS for us.
     # XXX BANDAID
-    cp /usr/include/krb_err.h $OBJ/tmp/usr/include
-    make $MYFLAGS CROSS_COMPILER_PREFIX=$OBJ/tmp/usr/bin/ _depend
+    #cp /usr/include/krb_err.h ${OBJ}${SRCDIR}/tmp/usr/include
+    make $MYFLAGS CROSS_COMPILER_PREFIX=${OBJ}${SRCDIR}/tmp/usr/bin/ _depend
     if [ $? != 0 ]; then
 	echo "Error during bootstrap" >&2
 	exit 1
