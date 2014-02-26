@@ -5,10 +5,11 @@ DRY=
 SCAN_BUILD=/usr/local/bin/scan-build34
 CLANG_SHARE=/usr/local/share/clang34
 
-SRCDIR=/ssd/lwhsu/scan-build/src
-export OBJ=/ssd/lwhsu/scan-build/obj
-export MAKEOBJDIRPREFIX=/ssd/lwhsu/scan-build/obj
-DEST=/ssd/lwhsu/scan-build/dest
+WORKDIR=`pwd -P`
+SRCDIR=src
+export OBJ=${WORKDIR}/obj
+export MAKEOBJDIRPREFIX=${OBJ}
+DEST=${WORKDIR}/dest
 #RELEASE=Release
 MYFLAGS="__MAKE_CONF=/dev/null -m $SRCDIR/share/mk -DWITHOUT_PROFILE -DMODULES_WITH_WORLD"
 #MYFLAGS="$MYFLAGS -DWITH_GNUCXX -DWITH_GCC COMPILER_TYPE=gcc"
