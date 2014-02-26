@@ -43,7 +43,7 @@ do_scan()
 	    --use-cc ${OBJ}${SRCDIR}/tmp/usr/bin/cc \
 	    --use-c++ ${OBJ}${SRCDIR}/tmp/usr/bin/c++ \
 	    -k -o $output make -j8 $MYFLAGS \
-	    CROSS_COMPILER_PREFIX=$OBJ${SRCDIR}/tmp/usr/bin/ "$@"
+	    CROSS_COMPILER_PREFIX=${OBJ}${SRCDIR}/tmp/usr/bin/ "$@"
 	rmdir $output 2>/dev/null
     else
 	echo "$dir -> $output"
