@@ -6,7 +6,7 @@ SCAN_BUILD=/usr/local/bin/scan-build34
 CLANG_SHARE=/usr/local/share/clang34
 
 WORKDIR=`pwd -P`
-SRCDIR=src
+SRCDIR=${WORKDIR}/src
 export OBJ=${WORKDIR}/obj
 export MAKEOBJDIRPREFIX=${OBJ}
 DEST=${WORKDIR}/dest
