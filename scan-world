@@ -127,11 +127,6 @@ if [ -z "$DRY" ]; then
     echo "-=-> Preparing build (libraries)"
     make $MYFLAGS _libraries
     echo "-=-> Preparing build (depend)"
-    # libiconv's _depend phase needs includes from WORLDTMP (so it works on 9-STABLE).
-    # Hack around this by triggering the cross-compile support which will add
-    # --sysroot=$WORLDTMP to CFLAGS for us.
-    # XXX BANDAID
-    #cp /usr/include/krb_err.h ${OBJ}${SRCDIR}/tmp/usr/include
     make $MYFLAGS CROSS_COMPILER_PREFIX=${OBJ}${SRCDIR}/tmp/usr/bin/ _depend
     if [ $? != 0 ]; then
 	echo "Error during bootstrap" >&2
