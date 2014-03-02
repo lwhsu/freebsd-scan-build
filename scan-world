@@ -162,17 +162,17 @@ if [ -z "$DRY" ]; then
     echo "-=-> Renaming output dirs"
     find . -type d -name "${DATE}-*-[1-9]" -prune -exec sh -c 'd={}; mv "$d" "${d%-??????-*-[1-9]*}-'$ARCH'"' \;
 
-    echo "-=-> Linking to LATEST"
-    rm -rf LATEST
-    mkdir LATEST
+    #echo "-=-> Linking to LATEST"
+    #rm -rf LATEST
+    #mkdir LATEST
 #    find * -type d -name "${DATE}-$ARCH" -prune -exec sh -c 'd={}; ln -s "../$d" "LATEST/`dirname $d`"' \;
 
-    echo "-=-> Original size"
-    du -kh -d 0 ${DEST}
+    #echo "-=-> Original size"
+    #du -kh -d 0 ${DEST}
 #    find . -not -name \*.gz -not -name \*.log -not -name README.html -not -name HEADER.html -type f -exec gzip -9n {} \;
 #    echo "-=-> After compression"
 #    du -kh -d 0 ${DEST}
-    freebsd-scan-build/fdupes-hardlink ${DEST} > /dev/null
-    echo "-=-> After deduping"
-    du -kh -d 0 ${DEST}
+    #freebsd-scan-build/fdupes-hardlink ${DEST} > /dev/null
+    #echo "-=-> After deduping"
+    #du -kh -d 0 ${DEST}
 fi
