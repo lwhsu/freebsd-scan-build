@@ -2,7 +2,7 @@
 
 DRY=
 
-SCAN_BUILD=/usr/local/bin/scan-build34
+SCAN_BUILD=llvm/Release/bin/scan-build
 
 WORKDIR=`pwd -P`
 SRCDIR=${WORKDIR}/src
