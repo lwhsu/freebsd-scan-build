@@ -15,6 +15,7 @@ MYFLAGS="__MAKE_CONF=/dev/null -m $SRCDIR/share/mk -DWITHOUT_PROFILE -DMODULES_W
 #MYFLAGS="$MYFLAGS -DWITHOUT_CLANG -DWITHOUT_LLVM"
 DATE=`date "+%Y-%m-%d"`
 ARCH=`uname -p`
+JFLAG=-j4
 
 #LOCK=/tmp/scan.lock
 #trap 'rm -f ${LOCK} ; exit 1' 1 2 3 15
@@ -32,8 +33,8 @@ do_scan()
     if [ -z "$DRY" ]; then
 	mkdir -p $output || exit 1
 	if [ -z "$noclean" ]; then
-	    make -j8 $MYFLAGS clean
-	    make -j8 $MYFLAGS obj
+	    make ${JFLAG} $MYFLAGS clean
+	    make ${JFLAG} $MYFLAGS obj
 	fi
 	echo "-=-> scanning $dir at `date "+%Y-%m-%d %H:%M:%S"`"
 	/usr/bin/time -l \
@@ -41,7 +42,7 @@ do_scan()
 	${SCAN_BUILD} \
 	    --use-cc ${OBJ}${SRCDIR}/tmp/usr/bin/cc \
 	    --use-c++ ${OBJ}${SRCDIR}/tmp/usr/bin/c++ \
-	    -k -o $output make -j8 $MYFLAGS \
+	    -k -o $output make ${JFLAG} $MYFLAGS \
 	    CROSS_COMPILER_PREFIX=${OBJ}${SRCDIR}/tmp/usr/bin/ "$@"
 	rmdir $output 2>/dev/null
     else
@@ -88,7 +89,7 @@ echo "-=-> scan-world started at `date "+%Y-%m-%d %H:%M:%S"`"
 #    gmake update
 #
 #    echo "-=-> Building LLVM"
-#    if ! gmake -j4; then
+#    if ! gmake ${JFLAG}; then
 #	if ! gmake; then
 #	    echo "Error building LLVM, bailing out" 2>&1
 #	    exit 1
