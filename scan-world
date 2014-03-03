@@ -2,9 +2,10 @@
 
 DRY=
 
-SCAN_BUILD=llvm/Release/bin/scan-build
-
 WORKDIR=`pwd -P`
+
+SCAN_BUILD=${WORLD}/llvm/Release/bin/scan-build
+
 SRCDIR=${WORKDIR}/src
 export OBJ=${WORKDIR}/obj
 export MAKEOBJDIRPREFIX=${OBJ}
