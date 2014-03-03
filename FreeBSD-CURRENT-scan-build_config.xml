@@ -80,7 +80,7 @@ cd llvm
     --with-c-include-dirs=${WORKDIR}/obj/${WORKDIR}/src/tmp/usr/include \
     --with-cxx-include-root=${WORKDIR}/obj/${WORKDIR}/src/tmp/usr/include
 
-gmake
+gmake -j4
 
 cp -p ./tools/clang/tools/scan-build/scan-build \
       ./tools/clang/tools/scan-build/scanview.css \
