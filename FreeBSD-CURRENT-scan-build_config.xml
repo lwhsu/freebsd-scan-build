@@ -73,10 +73,12 @@
     <hudson.tasks.Shell>
       <command># build llvm/clang
 
+WORKDIR=`pwd -P`
+
 cd llvm
 ./configure --enable-optimized --disable-assertions --disable-docs --enable-targets=host \
-    --with-c-include-dirs=${WORKSPACE}/obj/${WORKSPACE}/src/tmp/usr/include \
-    --with-cxx-include-root=${WORKSPACE}/obj/${WORKSPACE}/src/tmp/usr/include
+    --with-c-include-dirs=${WORKDIR}/obj/${WORKDIR}/src/tmp/usr/include \
+    --with-cxx-include-root=${WORKDIR}/obj/${WORKDIR}/src/tmp/usr/include
 
 gmake
 
