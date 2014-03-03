@@ -97,19 +97,6 @@ cp -p ./tools/clang/tools/scan-build/ccc-analyzer \
 sh freebsd-scan-build/scan-world</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <htmlpublisher.HtmlPublisher plugin="htmlpublisher@1.3">
-      <reportTargets>
-        <htmlpublisher.HtmlPublisherTarget>
-          <reportName>Clang scan-build</reportName>
-          <reportDir>dest</reportDir>
-          <reportFiles>index.html</reportFiles>
-          <keepAll>false</keepAll>
-          <allowMissing>false</allowMissing>
-          <wrapperName>htmlpublisher-wrapper.html</wrapperName>
-        </htmlpublisher.HtmlPublisherTarget>
-      </reportTargets>
-    </htmlpublisher.HtmlPublisher>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>
